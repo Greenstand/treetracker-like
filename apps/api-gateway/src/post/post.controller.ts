@@ -8,18 +8,25 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
-  createPost(@Body(ValidationPipe) createPostDto: CreatePostDto) {
-    return this.postService.createPost(createPostDto);
+  async createPost(@Body(ValidationPipe) createPostDto: CreatePostDto) {
+    return await this.postService.createPost(createPostDto);
   }
 
   @Get(':id')
-  getPost(@Param('id') id: string) {
-    return this.postService.getPost(parseInt(id));
+  async getPost(@Param('id') id: string) {
+    return await this.postService.getPost(id);
   }
   
   @Post(':id/like')
-  likePost(@Param('id') id: string, @Body() userEmail: string) {
-    let userLikePostDto = new UserLikePostDto(userEmail, parseInt(id));
-    return this.postService.likePost(userLikePostDto);
+  async likePost(@Param('id') id: string, @Body() user: string) {
+    let userLikePostDto = new UserLikePostDto(user['username'], parseInt(id), true);
+    return await this.postService.likePost(userLikePostDto);
   }
+
+  @Post(':id/unlike')
+  async unlikePost(@Param('id') id: string, @Body() user: string) {
+    let userLikePostDto = new UserLikePostDto(user['username'], parseInt(id), false);
+    return await this.postService.likePost(userLikePostDto);
+  }
+
 }

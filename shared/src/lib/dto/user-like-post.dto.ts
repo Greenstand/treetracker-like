@@ -1,16 +1,21 @@
-import { IsNumber, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsNumber, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class UserLikePostDto {
   @IsNumber()
   @IsNotEmpty()
   postId: number;
 
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
-  userEmail: string;
+  username: string;
 
-  constructor(userEmail: string, postId: number) {
+  @IsBoolean()
+  @IsNotEmpty()
+  like: boolean;
+
+  constructor(username: string, postId: number, like: boolean) {
     this.postId = postId;
-    this.userEmail = userEmail;
+    this.username = username;
+    this.like = like;
   }
 }

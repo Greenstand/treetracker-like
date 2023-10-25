@@ -1,54 +1,50 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
-import { AuthenticateUserDto, CreateUserDto } from '@like-button-sample/shared';
+import { Injectable } from '@nestjs/common';
+import { AuthDto } from '../dto/auth.dto';
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
+import { CreateUserDto } from '@like-button-sample/shared';
 
 @Injectable()
-export class UserService implements OnModuleInit {
-  constructor(
-    @Inject('AUTH_MICROSERVICE') private readonly authClient: ClientKafka,
-    @Inject('POST_MICROSERVICE') private readonly postClient: ClientKafka
-  ) {}
+export class UserService {
+  constructor() {}
 
-  createUser(createUserDto: CreateUserDto): any {    
-    return 'createUser function';
+  async validateUser(authDto: AuthDto) {
+    const body = {
+      grant_type: 'password',
+      username: authDto.username,
+      password: authDto.password,
+      client_id: 'like-dashboard',
+    };
+    const res = await axios.post(
+      'https://dev-k8s.treetracker.org/auth/realms/like-system/protocol/openid-connect/token', 
+      body, 
+      {headers: {'content-type': 'application/x-www-form-urlencoded'}}
+    )
+      .catch((e) => {
+        if (e.response) {
+          // Status code falls out of the range of 2xx
+          console.log(e.response.data);
+          console.log(e.response.status);
+          // console.log(e.response.headers);
+        } else if (e.request) {
+          // No response was received
+          console.log(e.request);
+        }
+        return null;
+      });
 
-    this.authClient
-          .send('create_user', JSON.stringify(createUserDto))
-          .subscribe((user) => {
-            if (user != null) {
-              console.log(`created user ${user.name}`);
-              return this.postClient.emit('create_user', JSON.stringify(createUserDto));
-              return user;
-            }
-            else {
-              console.log('user already exists');
-              return 'user already exists';
-            }
-          });
+    const userId: string = await jwt.decode(res['data']['access_token'])['sub'].toString();
+    const getUserQuery = await axios.get(`http://localhost:3010/users/${userId}`);
+    let user = getUserQuery['data'];
+    if (user == null || user.length == 0) {
+      const createUserQuery = await axios.post('http://localhost:3010/users', new CreateUserDto('John Doe', authDto.username, userId));
+      user = createUserQuery['data'];
+    }
+    return { tokens: res['data'], user_data: { username: user['username'], name: user['name'] } };
   }
 
-  async validateUser(authenticateUserDto: AuthenticateUserDto): Promise<any> {
-    return 'signInUser function';
-
-    // const user = this.authClient.send('validate_user', JSON.stringify(authenticateUserDto)).subscribe();
-    // console.log(`found user ${user.name}`);
-
-    this.authClient
-          .send('validate_user', JSON.stringify(authenticateUserDto))
-          .subscribe((user) => {
-            if (user != null) {
-              console.log(`found user ${user.name}`);
-              return user;
-            }
-            else {
-              return 'email or password is incorrect';
-            }
-          });
-    // this.authClient.emit('validate_user', JSON.stringify(authenticateUserDto));
-  }
-
-  onModuleInit() {
-    this.authClient.subscribeToResponseOf('create_user');
-    this.authClient.subscribeToResponseOf('validate_user');
+  async getUserPosts(username: string) {
+    const posts = await axios.get(`http://localhost:3010/users/${username}/posts`);
+    return posts;
   }
 }

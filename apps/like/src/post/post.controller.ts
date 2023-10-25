@@ -1,24 +1,30 @@
-import { Controller, ParseIntPipe, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CreatePostDto, EditPostDto } from '@like-button-sample/shared';
+import { Body, Controller, Get, Post, Put, ValidationPipe, HttpStatus, Param } from '@nestjs/common';
+import { CreatePostDto, EditPostDto, UserLikePostDto } from '@like-button-sample/shared';
 import { PostService } from './post.service';
 
-@Controller()
+@Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @MessagePattern('create_post')
-  handlePostCreate(@Payload(ValidationPipe) data: CreatePostDto) {
-    return this.postService.createPost(data);
+  @Post()
+  async handlePostCreate(@Body(ValidationPipe) data: CreatePostDto) {
+    return await this.postService.createPost(data);
   }
 
-  @MessagePattern('get_post')
-  handleGetPost(@Payload('postId', ParseIntPipe) postId: number) {
-    return this.postService.getPost(postId);
+  @Get(':id')
+  async getPost(@Param('id') id: string) {
+    console.log(parseInt(id) + 1);
+    return await this.postService.getPost(parseInt(id));
+  }
+  
+  @Post('like')
+  async likePost(@Body(ValidationPipe) userLikePostDto: UserLikePostDto) {
+    const { postId, username, like } = userLikePostDto;
+    return await this.postService.likePost(postId, username, like);
   }
 
-  @MessagePattern('edit_post')
-  handlePostEdit(@Payload(ValidationPipe) data: EditPostDto) {
-    return this.postService.editPost(data);
+  @Put(':id')
+  async handlePostEdit(@Param('id') id: string, @Body(ValidationPipe) data: EditPostDto) {
+    return await this.postService.editPost(id, data);
   }
 }

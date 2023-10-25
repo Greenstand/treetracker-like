@@ -1,53 +1,65 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Post } from '../entities/post.entity';
-import { User } from '../entities/user.entity';
 import { CreatePostDto, EditPostDto } from '@like-button-sample/shared';
-
+import { prisma } from '../../prisma/prisma';
 
 @Injectable()
 export class PostService {
-  constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Post) private readonly postRepository: Repository<Post>
-  ) {}
+  constructor() {}
 
-  createPost (createPostDto: CreatePostDto) {
-    let user = null;
-    this.userRepository.findOne({
-        where: { email: createPostDto.userEmail }
-    })
-        .then(u => { user = u });
+  async createPost (createPostDto: CreatePostDto) {
+    const { content, username } = createPostDto;
+    let user = await prisma.user.findFirst({
+      where: { username: username }
+    }); 
+    console.log(user);
     if (user == null) {
       return null;
     }
-    let post: Post = new Post();
-    post.creator = user;
-    post.content = createPostDto.content;
-    return this.postRepository.save(post);
+    const post = await prisma.post.create({
+      data: {
+        content,
+        creator: {
+          connect: { id: user.id }
+        },
+      },
+    });
+    console.log(post);
+    return post;
   }
 
-  getPost(postId: number) {
-    return this.postRepository.findOne({
+  async getPost(postId: number) {
+    return await prisma.post.findFirst({
       where: { id: postId }
     });
   }
 
-  editPost(editPostDto: EditPostDto) {
-    let oldPost = null;
-    this.postRepository.findOne({
-      where: { id: editPostDto.postId }
-    })
-      .then(p => { oldPost = p });
-    if (oldPost == null) {
-      return null;
+  async likePost(postId: number, username: string, like: boolean) {
+    if (like) {
+      await prisma.post.update({
+        where: { id: postId },
+        data: {
+          likedUsers: {
+            create: {
+              user: {
+                connect: { username: username },
+              },
+            },
+          },
+        }
+      }).catch((e) => { return null; });
     }
-    let newPost: Post = new Post();
-    newPost.creator = oldPost.creator;
-    newPost.likedUsers = oldPost.likedUsers;
-    newPost.content = editPostDto.content;
-    this.postRepository.delete({ id: oldPost.id });
-    return this.postRepository.save(newPost);
+    else {}
+    return await prisma.post.findFirst({
+      where: { id: postId },
+      include: { likedUsers: true }
+    });
+  }
+
+  async editPost(postId: string, editPostDto: EditPostDto) {
+    const updatedPost = await prisma.post.update({
+      where: { id: editPostDto.postId },
+      data: { content: editPostDto.content }
+    });
+    return updatedPost;
   }
 }

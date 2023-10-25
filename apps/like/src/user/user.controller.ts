@@ -1,19 +1,23 @@
-import { Controller, ParseIntPipe, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Body, Controller, Post, Get, Param, ParseIntPipe, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '@like-button-sample/shared';
 
-@Controller()
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @MessagePattern('create_user')
-  handleCreateUser(@Payload(ValidationPipe) data: CreateUserDto) {
-    return this.userService.createUser(data);
+  @Post()
+  async handleCreateUser(@Body(ValidationPipe) data: CreateUserDto) {
+    return await this.userService.createUser(data);
   }
 
-  @MessagePattern('get_user')
-  handleGetUser(@Payload('userId', ParseIntPipe) userId: number) {
-    return this.userService.getUser(userId);
+  @Get(':id')
+  async handleGetUser(@Param('id') id: string) {
+    return await this.userService.getUserById(id);
+  }
+
+  @Get(':username/posts')
+  async handleGetUserPosts(@Param('username') username: string) {
+    return await this.userService.getPostsByUser(username);
   }
 }

@@ -39,5 +39,7 @@ testem.log
 Thumbs.db
 
 # SQLite DB files
-authDB
 postDB
+
+# dotenv file
+.env

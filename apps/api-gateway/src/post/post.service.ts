@@ -1,46 +1,26 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { CreatePostDto, UserLikePostDto } from '@like-button-sample/shared';
+import axios from 'axios';
 
 @Injectable()
-export class PostService implements OnModuleInit {
-  constructor (
-    @Inject('POST_MICROSERVICE') private readonly postClient: ClientKafka
-  ) {}
+export class PostService {
+  constructor () {}
 
-  createPost(data: CreatePostDto) {
-    return 'createPost function';
-
-    this.postClient
-          .send('create_post', JSON.stringify(data))
-          .subscribe((post) => {
-            return post;
-          });
+  async createPost(data: CreatePostDto) {
+    const query = await axios.post('http://localhost:3010/posts', data)
+                  .catch((e) => { return null; });
+    return query.data;
   }
 
-  getPost(postId: number) {
-    return 'getPost function';
-
-    this.postClient
-          .send('get_post', JSON.stringify({postId}))
-          .subscribe((post) => {
-            if (post != null) {
-              return post;
-            }
-            else {
-              return 'post no longer exists';
-            }
-          });
+  async getPost(postId: string) {
+    const query = await axios.get(`http://localhost:3010/posts/${postId}`)
+                  .catch((e) => { return null; });
+    return query.data;
   }
 
-  likePost(data: UserLikePostDto) {
-    return 'likePost function';
-
-    this.postClient.emit('user_like_post', JSON.stringify(data));
-  }
-
-  onModuleInit() {
-      this.postClient.subscribeToResponseOf('create_post');
-      this.postClient.subscribeToResponseOf('get_post');
+  async likePost(data: UserLikePostDto) {
+    const query = await axios.post(`http://localhost:3010/posts/like`, data)
+                  .catch((e) => { return null; });
+    return query.data;
   }
 }

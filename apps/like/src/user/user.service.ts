@@ -1,35 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Post } from '../entities/post.entity';
-import { User } from '../entities/user.entity';
 import { CreateUserDto } from '@like-button-sample/shared';
-
+import { prisma } from '../../prisma/prisma';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>
-  ) {}
+  constructor() {}
 
-  createUser(createUserDto: CreateUserDto) {
-    let existedUser = null;
-    this.userRepository.findOne({
-        where: { email: createUserDto.email }
-    })
-        .then(u => { existedUser = u });
+  async createUser(createUserDto: CreateUserDto) {
+    const existedUser = await prisma.user.findFirst({
+      where: { id: createUserDto.id }
+    });
     if (existedUser != null) {
-        return null;
+      console.log(`user ${existedUser.name} already exists`);
+      return null;
     }
-    let user: User = new User();
-    user.name = createUserDto.name;
-    user.email = createUserDto.email;
-    return this.userRepository.save(user);
+    console.log(`saving user ${createUserDto.name}...`);
+    return await prisma.user.create({
+      data: {
+        id: createUserDto.id,
+        username: createUserDto.username,
+        name: createUserDto.name,
+      },
+    });
   }
 
-  getUser(userId: number) {
-    return this.userRepository.findOne({
+  async getUserById(userId: string) {
+    return await prisma.user.findFirst({
       where: { id: userId }
+    });
+  }
+
+  async getPostsByUser (username: string) {
+    return await prisma.user.findFirst({
+      where: { username: username },
+      include: { createdPosts: true }
     });
   }
 }
