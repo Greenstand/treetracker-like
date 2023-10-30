@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  title: Treetracker Wallet API
+  contact: {}
+  version: '1.28.0'
+servers:
+  - url: https://localhost:3010
+    variables:
+      environment:
+        default: dev
+        enum:
+          - dev     # Development server
+          - test    # Test server
+paths:
+  '/{object_type}/{object_uuid}/like':
+    post:
+      tags:
+        - Like / unlike a likable object
+      summary: Like a likable object
+      description: 'Like a likable object'
+      parameters:
+        - name: object_type
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: trees
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 186734
+      requestBody:
+        description: 'User OIDC access token'
+        content:
+          text/plain: 
+            example: '{{ACCESS_TOKEN}}'
+        required: true
+      responses:
+        '201':
+          description: 'Successfully like the object response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '422':
+          description: 'Missing request parameters'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+              example:
+                code: 422
+                message: 'object_type is not allowed to be empty'
+      deprecated: false
+  
+  '/{object_type}/{object_uuid}/unlike':
+    post:
+      tags:
+        - Like / unlike a likable object
+      summary: Unlike a likable object
+      description: 'Unlike a likable object'
+      parameters:
+        - name: object_type
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: trees
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 186734
+      requestBody:
+        description: 'User OIDC access token'
+        content:
+          text/plain: 
+            example: '{{ACCESS_TOKEN}}'
+        required: true
+      responses:
+        '201':
+          description: 'Successfully like the object response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '422':
+          description: 'Missing request parameters'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+              example:
+                code: 422
+                message: 'object_type is not allowed to be empty'
+      deprecated: false
+      
+  '/{object_type}/{object_uuid}':
+    get:
+      tags:
+        - Get info on a likable object
+      summary: Get info on a likable object
+      description: 'Get info on a likable object'
+      parameters:
+        - name: object_type
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: trees
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 186734
+      responses:
+        '200':
+          description: 'Successfully like the object response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '422':
+          description: 'Missing request parameters'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+              example:
+                code: 422
+                message: 'object_type is not allowed to be empty'
+      deprecated: false
+
+  '/user/likes':
+    post:
+      tags:
+        - Get user like / unlike activities
+      summary: Get user like / unlike activities
+      description: 'Get user like / unlike activities'
+      requestBody:
+        description: 'User OIDC access token'
+        content:
+          text/plain: 
+            example: '{{ACCESS_TOKEN}}'
+        required: true
+      responses:
+        '200':
+          description: 'Successfully retrieve user activities'
+          content:
+            application/json:
+              example:
+                species: [1,2]
+                trees: [186735, 186734]
+        '404':
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+              example:
+                code: 404
+                message: 'User not found'
+      deprecated: false
+components:
+  parameters:
+    accessToken:
+      name: access_token
+      in: header
+      description: 'Specifies the user information, mostly the user id'
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: {{ACCESS_TOKEN}}
+  schemas:
+    likableObject:
+      title: Likeable object
+      required:
+        - objectType
+        - objectId
+        - numLikes
+      type: object
+      properties:
+        objectType:
+          type: string
+          example: trees
+        objectId:
+          type: string
+          example: 186734
+        numLikes:
+          type: number
+          example: 10
