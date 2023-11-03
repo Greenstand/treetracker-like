@@ -12,22 +12,22 @@ servers:
           - dev     # Development server
           - test    # Test server
 paths:
-  '/{object_type}/{object_uuid}/like':
-    post:
+  '/like/types/{type_id}/things/{object_id}':
+    get:
       tags:
         - Like / unlike a likable object
       summary: Like a likable object
       description: 'Like a likable object'
       parameters:
-        - name: object_type
+        - name: type_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
           schema:
             type: string
             format: uuid
-            example: trees
-        - name: object_uuid
+            example: 1
+        - name: object_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
@@ -35,46 +35,40 @@ paths:
             type: string
             format: uuid
             example: 186734
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          text/plain: 
-            example: '{{ACCESS_TOKEN}}'
-        required: true
+      # requestBody:
+      #   description: 'User OIDC access token'
+      #   content:
+      #     text/plain: 
+      #       example: '{{ACCESS_TOKEN}}'
+      #   required: true
       responses:
-        '201':
+        '200':
           description: 'Successfully like the object response'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: 'Missing request parameters'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/likableObject'
-              example:
-                code: 422
-                message: 'object_type is not allowed to be empty'
+          $ref: '#/components/responses/MissingParameterError'
       deprecated: false
-  
-  '/{object_type}/{object_uuid}/unlike':
-    post:
+  '/unlike/types/{type_id}/things/{object_id}':
+    get:
       tags:
         - Like / unlike a likable object
       summary: Unlike a likable object
       description: 'Unlike a likable object'
       parameters:
-        - name: object_type
+        - name: type_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
           schema:
             type: string
             format: uuid
-            example: trees
-        - name: object_uuid
+            example: 1
+        - name: object_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
@@ -82,19 +76,21 @@ paths:
             type: string
             format: uuid
             example: 186734
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          text/plain: 
-            example: '{{ACCESS_TOKEN}}'
-        required: true
+      # requestBody:
+      #   description: 'User OIDC access token'
+      #   content:
+      #     text/plain: 
+      #       example: '{{ACCESS_TOKEN}}'
+      #   required: true
       responses:
-        '201':
+        '200':
           description: 'Successfully like the object response'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: 'Missing request parameters'
           content:
@@ -105,23 +101,22 @@ paths:
                 code: 422
                 message: 'object_type is not allowed to be empty'
       deprecated: false
-      
-  '/{object_type}/{object_uuid}':
+  '/info/types/{type_id}/things/{object_id}':
     get:
       tags:
         - Get info on a likable object
       summary: Get info on a likable object
       description: 'Get info on a likable object'
       parameters:
-        - name: object_type
+        - name: type_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
           schema:
             type: string
             format: uuid
-            example: trees
-        - name: object_uuid
+            example: 1
+        - name: object_id
           description: 'ID of specific token to retrieve'
           in: path
           required: true
@@ -136,6 +131,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: 'Missing request parameters'
           content:
@@ -145,6 +142,81 @@ paths:
               example:
                 code: 422
                 message: 'object_type is not allowed to be empty'
+      deprecated: false
+  '/types':
+    get:
+      tags:
+        - Types info and manipulation
+      summary: Get types name and id
+      description: 'Get types name and id'
+      responses:
+        '200':
+          description: 'Successfully retrieve types info'
+          content:
+            application/json:
+              example:
+                1: countries
+                2: organizations
+                3: planters
+                4: species
+                5: trees
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      deprecated: false
+    post:
+      tags:
+        - Types info and manipulation
+      summary: Create a new type in the database
+      description: 'Create a new type in the database'
+      requestBody:
+        description: 'Name of new type'
+        content:
+          text/plain: 
+            example: 'trees'
+        required: true
+      responses:
+        '201':
+          description: 'Successfully create new type'
+          content:
+            application/json:
+              example:
+                5: 'trees'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      deprecated: false
+  '/types/{type_id}':
+    put:
+      tags:
+        - Types info and manipulation
+      summary: Create a new type in the database
+      description: 'Create a new type in the database'
+      parameters:
+        - name: type_id
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 5
+      requestBody:
+        description: 'Name of new type'
+        content:
+          text/plain: 
+            example:
+              'above_the_ground_trees'
+        required: true
+      responses:
+        '200':
+          description: 'Successfully modified the type'
+          content:
+            application/json:
+              example:
+                5: 'above_the_ground_trees'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotfoundError'
       deprecated: false
 
   '/user/likes':
@@ -165,19 +237,45 @@ paths:
           content:
             application/json:
               example:
-                species: [1,2]
-                trees: [186735, 186734]
+                4: [1,2]
+                5: [186735, 186734]
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: 'User not found'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/likableObject'
-              example:
-                code: 404
-                message: 'User not found'
+          $ref: '#/components/responses/NotfoundError'
       deprecated: false
+
+security:
+  - bearerAuth: []
+  
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    MissingParameterError:
+      description: 'Missing request parameters'
+      content:
+        application/json:
+          example:
+            code: 422
+            message: 'type_id is not allowed to be empty'
+    UnauthorizedError:
+      description: 'Access is missing or invalid'
+      content:
+        application/json:
+          example:
+            code: 401
+            message: 'Access is missing or invalid'
+    NotfoundError:
+      description: 'Not found'
+      content:
+        application/json:
+          example:
+            code: 404
+            message: 'User not found'
   parameters:
     accessToken:
       name: access_token
