@@ -210,7 +210,7 @@ paths:
           content:
             application/json:
               example:
-                5: 'above_the_ground_trees'
+                550e8400-e29b-41d4-a716-446655440019: 'above_the_ground_trees'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
