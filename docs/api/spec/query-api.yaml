@@ -1,8 +1,9 @@
+# The openapi specification for the like API
 openapi: 3.0.0
 info:
-  title: Treetracker Wallet API
+  title: Treetracker Like API
   contact: {}
-  version: '1.28.0'
+  version: '1.0.0'
 servers:
   - url: https://localhost:3010
     variables:
@@ -11,13 +12,20 @@ servers:
         enum:
           - dev     # Development server
           - test    # Test server
+security:
+  - OAuth2:
+      - read
+      - write
+      - admin
+
 paths:
   '/types/{type_uuid}/things/{object_uuid}':
-    post:
+    get:
       tags:
         - Like / unlike a likable object and get the like counts
       summary: Get the like count of a likable object
-      description: 'Get the like count of a likable object'
+      description: Get the like count of a likable object, get like number is open for everyone, no need token
+      security: []
       parameters:
         - name: type_uuid
           description: 'ID of specific token to retrieve'
@@ -35,13 +43,6 @@ paths:
             type: string
             format: uuid
             example: '550e8400-e29b-41d4-a716-196655440000'
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          application/json: 
-            example: 
-              access_token: '{{ACCESS_TOKEN}}'
-        required: true
       responses:
         '200':
           description: 'Successfully retrieve the object'
@@ -59,7 +60,9 @@ paths:
       tags:
         - Like / unlike a likable object and get the like counts
       summary: Like a likable object
-      description: 'Like a likable object'
+      description: 'Like a likable object, liking things needs user token (logged in), and write permission to this resource, we will get the user id from the token, and write coresponding data in db'
+      security:
+        - OAuth2: ["write"]
       parameters:
         - name: type_uuid
           description: 'ID of specific token to retrieve'
@@ -77,13 +80,6 @@ paths:
             type: string
             format: uuid
             example: '550e8400-e29b-41d4-a716-196655440000'
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          application/json: 
-            example: 
-              access_token: '{{ACCESS_TOKEN}}'
-        required: true
       responses:
         '201':
           description: 'Successfully like the object response'
@@ -101,7 +97,9 @@ paths:
       tags:
         - Like / unlike a likable object and get the like counts
       summary: Unlike a likable object
-      description: 'Unlike a likable object'
+      description: 'Unlike a likable object, liking things needs user token (logged in), and write permission to this resource, we will get the user id from the token, and write coresponding data in db'
+      security:
+        - OAuth2: ["write"]
       parameters:
         - name: type_uuid
           description: 'ID of specific token to retrieve'
@@ -119,13 +117,6 @@ paths:
             type: string
             format: uuid
             example: '550e8400-e29b-41d4-a716-196655440000'
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          application/json: 
-            example: 
-              access_token: '{{ACCESS_TOKEN}}'
-        required: true
       responses:
         '201':
           description: 'Successfully unlike the object response'
@@ -143,7 +134,9 @@ paths:
       tags:
         - Types info and manipulation
       summary: Get types name and id
-      description: 'Get types name and id'
+      description: 'Get types name and id, require `admin` scope of the autho0'
+      security:
+        - OAuth2: [admin]
       responses:
         '200':
           description: 'Successfully retrieve types info'
@@ -162,14 +155,15 @@ paths:
       tags:
         - Types info and manipulation
       summary: Create a new type in the database
-      description: 'Create a new type in the database'
+      description: 'Create a new type in the database, require `admin` scope of OAuth2 permission'
+      security:
+        - OAuth2: [admin]
       requestBody:
         description: 'Name of new type'
         content:
-          application/json: 
-            example: 
+          application/json:
+            example:
               name: 'trees'
-              access_token: '{{ACCESS_TOKEN}}'
         required: true
       responses:
         '201':
@@ -185,8 +179,10 @@ paths:
     patch:
       tags:
         - Types info and manipulation
-      summary: Create a new type in the database
-      description: 'Create a new type in the database'
+      summary: Modify existing type in the database
+      description: 'Modify exisiting type in the database'
+      security:
+        - OAuth2: [admin]
       parameters:
         - name: type_uuid
           description: 'ID of specific token to retrieve'
@@ -197,12 +193,11 @@ paths:
             format: uuid
             example: '550e8400-e29b-41d4-a716-446655440000'
       requestBody:
-        description: 'Name of new type'
+        description: 'Name of type'
         content:
-          application/json: 
+          application/json:
             example:
               name: 'above_the_ground_trees'
-              access_token: '{{ACCESS_TOKEN}}'
         required: true
       responses:
         '200':
@@ -217,19 +212,13 @@ paths:
           $ref: '#/components/responses/NotfoundError'
       deprecated: false
 
-  '/user/likes':
-    post:
+  '/user/:user_id/types/:type_id':
+    get:
       tags:
-        - Get user like / unlike activities
+        - Get user like / unlike activities on a type
       summary: Get user like / unlike activities
-      description: 'Get user like / unlike activities'
-      requestBody:
-        description: 'User OIDC access token'
-        content:
-          application/json: 
-            example: 
-              access_token: '{{ACCESS_TOKEN}}'
-        required: true
+      description: 'Get user like / unlike activities, this api is open for everyone, so no token and access control needed'
+      security: []
       responses:
         '200':
           description: 'Successfully retrieve user activities'
@@ -243,8 +232,19 @@ paths:
         '404':
           $ref: '#/components/responses/NotfoundError'
       deprecated: false
-  
+
 components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dev-k8s.treetracker.org/keycloak/realm/treetracker/oauth/authorize
+          tokenUrl: https://dev-k8s.treetracker.org/keycloak/realm/treetracker/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations
   responses:
     MissingParameterError:
       description: 'Missing request parameters'
@@ -267,16 +267,6 @@ components:
           example:
             code: 404
             message: 'User not found'
-  parameters:
-    accessToken:
-      name: access_token
-      in: header
-      description: 'Specifies the user information, mostly the user id'
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: {{ACCESS_TOKEN}}
   schemas:
     likableObject:
       title: Likeable object
@@ -295,3 +285,4 @@ components:
         numLikes:
           type: number
           example: 10
+
