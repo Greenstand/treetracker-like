@@ -1,0 +1,288 @@
+# The openapi specification for the like API
+openapi: 3.0.0
+info:
+  title: Treetracker Like API
+  contact: {}
+  version: '1.0.0'
+servers:
+  - url: https://localhost:3010
+    variables:
+      environment:
+        default: dev
+        enum:
+          - dev     # Development server
+          - test    # Test server
+security:
+  - OAuth2:
+      - read
+      - write
+      - admin
+
+paths:
+  '/types/{type_uuid}/things/{object_uuid}':
+    get:
+      tags:
+        - Like / unlike a likable object and get the like counts
+      summary: Get the like count of a likable object
+      description: Get the like count of a likable object, get like number is open for everyone, no need token
+      security: []
+      parameters:
+        - name: type_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-446655440000'
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-196655440000'
+      responses:
+        '200':
+          description: 'Successfully retrieve the object'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/MissingParameterError'
+      deprecated: false
+  '/types/{type_uuid}/things/{object_uuid}/like':
+    post:
+      tags:
+        - Like / unlike a likable object and get the like counts
+      summary: Like a likable object
+      description: 'Like a likable object, liking things needs user token (logged in), and write permission to this resource, we will get the user id from the token, and write coresponding data in db'
+      security:
+        - OAuth2: ["write"]
+      parameters:
+        - name: type_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-446655440000'
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-196655440000'
+      responses:
+        '201':
+          description: 'Successfully like the object response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/MissingParameterError'
+      deprecated: false
+  '/types/{type_uuid}/things/{object_uuid}/unlike':
+    post:
+      tags:
+        - Like / unlike a likable object and get the like counts
+      summary: Unlike a likable object
+      description: 'Unlike a likable object, liking things needs user token (logged in), and write permission to this resource, we will get the user id from the token, and write coresponding data in db'
+      security:
+        - OAuth2: ["write"]
+      parameters:
+        - name: type_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-446655440000'
+        - name: object_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-196655440000'
+      responses:
+        '201':
+          description: 'Successfully unlike the object response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likableObject'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/MissingParameterError'
+      deprecated: false
+  '/types':
+    get:
+      tags:
+        - Types info and manipulation
+      summary: Get types name and id
+      description: 'Get types name and id, require `admin` scope of the autho0'
+      security:
+        - OAuth2: [admin]
+      responses:
+        '200':
+          description: 'Successfully retrieve types info'
+          content:
+            application/json:
+              example:
+                550e8400-e29b-41d4-a716-446655440010: countries
+                550e8400-e29b-41d4-a716-446655440001: organizations
+                550e8400-e29b-41d4-a716-446655440019: planters
+                550e8400-e29b-41d4-a716-446655440029: species
+                550e8400-e29b-41d4-a716-446655440024: trees
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      deprecated: false
+    post:
+      tags:
+        - Types info and manipulation
+      summary: Create a new type in the database
+      description: 'Create a new type in the database, require `admin` scope of OAuth2 permission'
+      security:
+        - OAuth2: [admin]
+      requestBody:
+        description: 'Name of new type'
+        content:
+          application/json:
+            example:
+              name: 'trees'
+        required: true
+      responses:
+        '201':
+          description: 'Successfully create new type'
+          content:
+            application/json:
+              example:
+                550e8400-e29b-41d4-a716-446655440019: 'trees'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      deprecated: false
+  '/types/{type_uuid}':
+    patch:
+      tags:
+        - Types info and manipulation
+      summary: Modify existing type in the database
+      description: 'Modify exisiting type in the database'
+      security:
+        - OAuth2: [admin]
+      parameters:
+        - name: type_uuid
+          description: 'ID of specific token to retrieve'
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-446655440000'
+      requestBody:
+        description: 'Name of type'
+        content:
+          application/json:
+            example:
+              name: 'above_the_ground_trees'
+        required: true
+      responses:
+        '200':
+          description: 'Successfully modified the type'
+          content:
+            application/json:
+              example:
+                550e8400-e29b-41d4-a716-446655440019: 'above_the_ground_trees'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotfoundError'
+      deprecated: false
+
+  '/user/:user_id/types/:type_id':
+    get:
+      tags:
+        - Get user like / unlike activities on a type
+      summary: Get user like / unlike activities
+      description: 'Get user like / unlike activities, this api is open for everyone, so no token and access control needed'
+      security: []
+      responses:
+        '200':
+          description: 'Successfully retrieve user activities'
+          content:
+            application/json:
+              example:
+                550e8400-e29b-41d4-a716-446655440001: [550e8400-e29b-41d4-a716-446655440024,550e8400-e29b-41d4-a716-446655440029]
+                550e8400-e29b-41d4-a716-446655440010: [550e8400-e29b-41d4-a716-446655440019, 550e8400-e29b-41d4-a716-446655440025]
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotfoundError'
+      deprecated: false
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://dev-k8s.treetracker.org/keycloak/realm/treetracker/oauth/authorize
+          tokenUrl: https://dev-k8s.treetracker.org/keycloak/realm/treetracker/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations
+  responses:
+    MissingParameterError:
+      description: 'Missing request parameters'
+      content:
+        application/json:
+          example:
+            code: 422
+            message: 'type_uuid is not allowed to be empty'
+    UnauthorizedError:
+      description: 'Access is missing or invalid'
+      content:
+        application/json:
+          example:
+            code: 401
+            message: 'Access is missing or invalid'
+    NotfoundError:
+      description: 'Not found'
+      content:
+        application/json:
+          example:
+            code: 404
+            message: 'User not found'
+  schemas:
+    likableObject:
+      title: Likeable object
+      required:
+        - objectType
+        - objectId
+        - numLikes
+      type: object
+      properties:
+        objectType:
+          type: string
+          example: trees
+        objectId:
+          type: string
+          example: 186734
+        numLikes:
+          type: number
+          example: 10
+
