@@ -27,6 +27,8 @@ model Post {
   likedUsers      UserLikePost[]
 }
 
+// comment feature as well
+
 model UserLikePost {
   userId          String
   postId          Int
