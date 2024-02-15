@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
+import { ObjectModule } from './object/object.module';
+import { TypeModule } from './type/type.module';
 
 @Module({
   imports: [
-    PostModule,
+    ObjectModule,
+    TypeModule,
     UserModule
   ],
   controllers: [],
