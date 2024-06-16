@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-  constructor() {}
+  constructor( ) {}
 
   @Get(':user_uuid/types/:type_uuid')
   async handleGetUserLikes(@Param('user_uuid') user_uuid: string) {
