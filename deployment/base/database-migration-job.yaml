@@ -18,9 +18,7 @@ spec:
                       - microservices-node-pool
       containers:
         - name: migration
-          image: treetracker-like
-          imagePullPolicy: IfNotPresent
-          
+          image: greenstand/treetracker-like:TAG
           env:
             - name: DATABASE_URL
               valueFrom:
