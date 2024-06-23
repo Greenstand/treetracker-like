@@ -1,0 +1,7 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: treetracker-like-api
+spec:
+  prefix: /like/
+  service: treetracker-like-api-service

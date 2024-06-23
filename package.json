@@ -2,7 +2,9 @@
   "name": "@like-button-sample/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "migration": "node node_modules/prisma migrate deploy --schema=./apps/like/prisma/schema.prisma"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/axios": "^3.0.0",

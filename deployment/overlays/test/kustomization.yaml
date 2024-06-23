@@ -1,0 +1,5 @@
+resources:
+  - ../../base
+patchesStrategicMerge:
+  - db-connection-sealed-secret.yaml
+  - mapping.yaml
