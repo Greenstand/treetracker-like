@@ -8,6 +8,6 @@ spec:
     app: treetracker-like-api
   ports:
     - protocol: TCP
-      port: 3006
+      port: 80
       targetPort: 3006
   type: ClusterIP
