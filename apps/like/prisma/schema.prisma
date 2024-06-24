@@ -11,17 +11,22 @@ datasource db {
   //url      = "file:../postDB"
 }
 
-
 model Type {
-  id              String          @id @default(uuid())
-  name            String
+  id   String @id @default(uuid())
+  name String
+  Like Like[]
 }
 
 model Like {
-  id              String          @id @default(uuid())
-  type_id         String          @relation(fields: [typeId], references: [id])
-  object_id       String 
-  user_id         Int
-  time            DateTime        @default(now())        
-  active          Boolean         @default(true)
+  id        String   @id @default(uuid())
+  type_id   String
+  object_id String
+  user_id   Int
+  time      DateTime @default(now())
+  active    Boolean  @default(true)
+
+  Type Type @relation(fields: [type_id], references: [id])
+
+  @@unique([type_id, object_id, user_id])
+  @@index([type_id, object_id, user_id])
 }
