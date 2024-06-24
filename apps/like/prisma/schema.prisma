@@ -8,32 +8,24 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  //url      = "file:../postDB"
+  // url      = "postgresql://postgres:123456@127.0.0.1:5432/postgres"
 }
 
-model User {
-  id              String          @id
-  name            String
-  username        String          @unique
-  createdPosts    Post[]
-  likedPosts      UserLikePost[]
+model Type {
+  id   String @id @default(uuid())
+  name String @unique
+  Like Like[]
 }
 
-model Post {
-  id              Int             @id @default(autoincrement())
-  content         String
-  creatorId       String
-  creator         User            @relation(fields: [creatorId], references: [id])
-  likedUsers      UserLikePost[]
-}
+model Like {
+  id        String   @id @default(uuid())
+  type_id   String
+  object_id String
+  user_id   Int
+  time      DateTime @default(now())
+  active    Boolean  @default(true)
 
-// comment feature as well
+  Type Type @relation(fields: [type_id], references: [id])
 
-model UserLikePost {
-  userId          String
-  postId          Int
-  user            User            @relation(fields: [userId], references: [id])
-  post            Post            @relation(fields: [postId], references: [id])
-
-  @@id([userId, postId])
+  @@unique([type_id, object_id, user_id])
 }
