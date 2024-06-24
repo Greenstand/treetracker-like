@@ -58,6 +58,12 @@
           "codeCoverage": true
         }
       }
+    }, 
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project apps/like/prisma/tsconfig.seed.json apps/like/prisma/seed.ts"
+      }
     }
   },
   "tags": []

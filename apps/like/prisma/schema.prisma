@@ -8,12 +8,12 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  //url      = "file:../postDB"
+  // url      = "postgresql://postgres:123456@127.0.0.1:5432/postgres"
 }
 
 model Type {
   id   String @id @default(uuid())
-  name String
+  name String @unique
   Like Like[]
 }
 
@@ -28,5 +28,4 @@ model Like {
   Type Type @relation(fields: [type_id], references: [id])
 
   @@unique([type_id, object_id, user_id])
-  @@index([type_id, object_id, user_id])
 }
