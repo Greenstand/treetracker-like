@@ -11,32 +11,17 @@ datasource db {
   // url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String          @id @default(uuid())
-  name            String
-  username        String          @unique
-  likedObjects    ObjectsOnUsers[]  
-}
 
 model Type {
   id              String          @id @default(uuid())
   name            String
-  likableObjects  LikableObject[]
 }
 
-model LikableObject {
+model Like {
   id              String          @id @default(uuid())
-  objectType      Type            @relation(fields: [typeId], references: [id])
-  typeId          String 
-  numLikes        Int            
-  likedUsers      ObjectsOnUsers[]
-}
-
-model ObjectsOnUsers {
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  object     LikableObject @relation(fields: [objectId], references: [id])
-  objectId   String
-
-  @@id([userId, objectId])
+  type_id         String          @relation(fields: [typeId], references: [id])
+  object_id       String 
+  user_id         Int
+  time            DateTime        @default(now())        
+  active          Boolean         @default(true)
 }
