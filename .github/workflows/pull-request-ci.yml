@@ -38,10 +38,10 @@ jobs:
         run: npm ci
 
       - name: Typescript compiles
-        run: npx nx build like
+        run: yarn build
 
       - name: Eslint
-        run: npx nx lint like
+        run: yarn lint
         continue-on-error: true
       
       - name: database migration
@@ -50,5 +50,5 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
       - name: run tests
-        run: npx nx test like
+        run: yarn test
 
