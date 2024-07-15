@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Put, ValidationPipe, HttpStatus, Param, Req, Res, Patch } from '@nestjs/common';
-import { CreatePostDto, EditPostDto, UserLikePostDto } from '@like-button-sample/shared';
+import { CreatePostDto, EditPostDto, UserLikePostDto } from 'libs/validation';
 import { TypeService} from './type.service';
 import jwt from 'jsonwebtoken';
 
