@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nx"],
+  "plugins": [],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -21,16 +21,16 @@
         ]
       }
     },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nx/typescript"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nx/javascript"],
-      "rules": {}
-    },
+//    {
+//      "files": ["*.ts", "*.tsx"],
+//      "extends": ["plugin:@nx/typescript"],
+//      "rules": {}
+//    },
+//    {
+//      "files": ["*.js", "*.jsx"],
+//      "extends": ["plugin:@nx/javascript"],
+//      "rules": {}
+//    },
     {
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
       "env": {
