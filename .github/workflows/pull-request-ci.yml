@@ -2,7 +2,7 @@
 name: CI for New Pull Requests
 
 on:
-  push:
+  pull_request:
     branches:
       - '*'
 
