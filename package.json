@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "migration": "node node_modules/prisma migrate deploy --schema=./apps/like/prisma/schema.prisma",
+    "migration": "node node_modules/prisma migrate deploy --schema=./prisma/schema.prisma",
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
