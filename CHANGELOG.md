@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/Greenstand/treetracker-like/compare/v1.3.0...v1.3.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* cmd [skip-ci] ([5fbfaea](https://github.com/Greenstand/treetracker-like/commit/5fbfaea800448a7bb819c2ba5fa6ce336ab0383f))
+* run test on pr creation skip-ci ([e0495d4](https://github.com/Greenstand/treetracker-like/commit/e0495d40d0cbbb9836dc4da7e2ee88b1ac823606))
+
 # [1.3.0](https://github.com/Greenstand/treetracker-like/compare/v1.2.0...v1.3.0) (2024-07-16)
 
 
