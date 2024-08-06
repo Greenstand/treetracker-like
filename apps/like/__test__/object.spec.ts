@@ -1,1 +1,1 @@
-// Integration test for the object
+// This file contains integration tests for the Object Module.

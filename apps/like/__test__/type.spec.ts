@@ -1,1 +1,1 @@
-// Integration test for the like type
+// This file contains integration tests for the Type module.

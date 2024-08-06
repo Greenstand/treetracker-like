@@ -1,1 +1,1 @@
-// Integration test for user
+// This file contains integration tests for the User Module.
