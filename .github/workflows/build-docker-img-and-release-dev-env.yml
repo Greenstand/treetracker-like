@@ -18,18 +18,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+    
+      - name: yarn clean install
+        run: yarn install --frozen-lockfile
 
-      - name: npm clean install
-        run: npm ci
+      - run: yarn global add semantic-release @semantic-release/{git,exec,changelog}
 
-      - run: npm i -g semantic-release @semantic-release/{git,exec,changelog}
 
       - run: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: make build
-        run: npx nx build like
+        run: yarn build
 
       - name: get-npm-version
         id: package-version

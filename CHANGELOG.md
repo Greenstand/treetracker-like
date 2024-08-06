@@ -1,0 +1,20 @@
+## [1.3.1](https://github.com/Greenstand/treetracker-like/compare/v1.3.0...v1.3.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* cmd [skip-ci] ([5fbfaea](https://github.com/Greenstand/treetracker-like/commit/5fbfaea800448a7bb819c2ba5fa6ce336ab0383f))
+* run test on pr creation skip-ci ([e0495d4](https://github.com/Greenstand/treetracker-like/commit/e0495d40d0cbbb9836dc4da7e2ee88b1ac823606))
+
+# [1.3.0](https://github.com/Greenstand/treetracker-like/compare/v1.2.0...v1.3.0) (2024-07-16)
+
+
+### Bug Fixes
+
+* rm branch [skip-ci] ([64cd0d9](https://github.com/Greenstand/treetracker-like/commit/64cd0d9ea55a216e8c98bf8725f8a5e2dd0e2a4f))
+* use yarn instead of npm [ski-ci] ([6b22f17](https://github.com/Greenstand/treetracker-like/commit/6b22f17a9fbec14038b35a670542f473bebed6ec))
+
+
+### Features
+
+* add semantic versiining [skip-ci] ([2ff8a85](https://github.com/Greenstand/treetracker-like/commit/2ff8a85db2e243d5fac58db97fa42a7ebcfdec7c))
