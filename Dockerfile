@@ -1,15 +1,15 @@
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 COPY package.json ./
-COPY package-lock.json ./
-RUN npm ci --silent
+COPY yarn.lock ./
+RUN yarn install --silent --frozen-lockfile
 COPY . .
 RUN npx prisma generate --schema=apps/like/prisma/schema.prisma
-RUN npx nx build like --configuration=production
-RUN npm prune --production
+RUN yarn build
+RUN yarn install --production --ignore-scripts --prefer-offline
 
-FROM node:18-alpine as prod
+FROM node:18-alpine AS prod
 WORKDIR /app
 COPY --from=builder app/dist/apps/like ./dist
 COPY --from=builder app/node_modules ./node_modules
