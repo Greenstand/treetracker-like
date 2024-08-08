@@ -1,0 +1,13 @@
+# Each line is a file pattern followed by one or more owners.
+
+
+* @Greenstand/Like-Code-Review-Team
+
+# Assign team @Greenstand/Like-Code-Review-Team to apps/native/
+apps/like/ @Greenstand/Like-Code-Review-Team
+
+# Assign team @Greenstand/Like-Code-Review-Team to apps/web/
+prisma/ @Greenstand/Like-Code-Review-Team
+
+# Assign team @Greenstand/Like-Code-Review-Team to packages/core/
+libs/ @Greenstand/Like-Code-Review-Team
