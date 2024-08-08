@@ -6,14 +6,14 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async getUserLikesOnType(user_id_: string, type_id: string){
+  async getUserLikesOnType(user_id_: string, type_id: string) {
     const user_id = Number(user_id_);
     return await this.prismaService.like.findMany({
-      where: {user_id, type_id},
+      where: { user_id, type_id },
       include: {
-        Type: true
-      }
-    })
+        Type: true,
+      },
+    });
   }
   // async createUser(createUserDto: CreateUserDto) {
   //   const existedUser = await prisma.user.findFirst({
