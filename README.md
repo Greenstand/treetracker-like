@@ -57,3 +57,24 @@ Run tests:
 ```
 npm run test-integration
 ```
+
+
+## connect db for local development
+
+
+```
+to build the image run
+docker-compose build
+
+to run the image background run
+docker-compose up -d
+```
+
+
+after the image runs up in the background , u need to then define a `DATABASE_URL` in the env
+
+the format of the  `DATABASE_URL` has to be like this
+
+postgresql://username:password@host:port/database
+
+e.g `DATABASE_URL=postgresql://easyuser:easypassword@localhost:5432/treetracker-like`
