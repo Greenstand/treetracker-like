@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'crypto';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -29,23 +30,28 @@ async function main() {
 
   if (treeType && speciesType) {
     // Create sample 'Like' entries
+    let randUserId = randomUUID();
+    let randObjectId = randomUUID();
     const like1 = await prisma.like.upsert({
-      where: { type_id_object_id_user_id: { type_id: treeType.id, object_id: 'tree1', user_id: 1 }},
+      where: { type_id_object_id_user_id: { type_id: treeType.id, object_id: randObjectId, user_id: randUserId } },
       update: {},
       create: {
         type_id: treeType.id,
-        object_id: 'tree1',
-        user_id: 1,
+        object_id: randObjectId,
+        user_id: randUserId,
       },
     });
 
+    randUserId = randomUUID();
+    randObjectId = randomUUID();
+
     const like2 = await prisma.like.upsert({
-      where: { type_id_object_id_user_id: { type_id: speciesType.id, object_id: 'species1', user_id: 2 }},
+      where: { type_id_object_id_user_id: { type_id: speciesType.id, object_id: randObjectId, user_id: randUserId } },
       update: {},
       create: {
         type_id: speciesType.id,
-        object_id: 'species1',
-        user_id: 2,
+        object_id: randObjectId,
+        user_id: randUserId,
       },
     });
 

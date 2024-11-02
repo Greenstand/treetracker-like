@@ -1,21 +1,20 @@
 import {
-  Body,
   Controller,
-  Post,
   Get,
   Param,
-  ParseIntPipe,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUserLikesDto } from './dto/get-user-likes-dto';
 
 @Controller('user')
 @ApiTags('user')
+
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get(':user_uuid/types/:type_uuid')
+  @Get(':userUUID/types/:typeUUID')
   @ApiOperation({ summary: 'Get user likes on type by user id' })
   @ApiResponse({
     status: 200,
@@ -26,9 +25,8 @@ export class UserController {
     description: 'Not Found',
   })
   async handleGetUserLikes(
-    @Param('user_uuid') user_uuid: string,
-    @Param('type_uuid') type_uuid: string
+    @Param(ValidationPipe) params: GetUserLikesDto,
   ) {
-    return this.userService.getUserLikesOnType(user_uuid, type_uuid);
+    return this.userService.getUserLikesOnType(params);
   }
 }
