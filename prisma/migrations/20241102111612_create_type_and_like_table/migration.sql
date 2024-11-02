@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "Type" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
 
     CONSTRAINT "Type_pkey" PRIMARY KEY ("id")
@@ -8,10 +8,10 @@ CREATE TABLE "Type" (
 
 -- CreateTable
 CREATE TABLE "Like" (
-    "id" TEXT NOT NULL,
-    "type_id" TEXT NOT NULL,
-    "object_id" TEXT NOT NULL,
-    "user_id" INTEGER NOT NULL,
+    "id" UUID NOT NULL,
+    "type_id" UUID NOT NULL,
+    "object_id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
     "time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "active" BOOLEAN NOT NULL DEFAULT true,
 

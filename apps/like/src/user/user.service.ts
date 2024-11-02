@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 // import { CreateUserDto } from 'libs/validation';
 import { PrismaService } from '../prisma/prisma.service';
+import { GetUserLikesDto } from './dto/get-user-likes-dto';
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
 
-  async getUserLikesOnType(user_id_: string, type_id: string) {
-    const user_id = Number(user_id_);
+  async getUserLikesOnType(params: GetUserLikesDto) {
     return await this.prismaService.like.findMany({
-      where: { user_id, type_id },
+      where: { user_id: params.userUUID, type_id: params.typeUUID },
       include: {
         Type: true,
       },

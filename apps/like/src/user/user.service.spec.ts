@@ -1,20 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaClient } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
-describe('UserController', () => {
-    let userController: UserController;
+describe('UserService', () => {
     let userService: UserService;
     let prismaMock: DeepMockProxy<PrismaClient>;
 
     beforeEach(async () => {
         prismaMock = mockDeep<PrismaClient>();
+
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [UserController],
             providers: [
                 UserService,
                 {
@@ -24,16 +22,15 @@ describe('UserController', () => {
             ],
         }).compile();
 
-        userController = module.get<UserController>(UserController);
         userService = module.get<UserService>(UserService);
     });
 
-    describe('handleGetUserLikes', () => {
-        it('should return user likes', async () => {
+    describe('getUserLikesOnType', () => {
+        it('should return user likes from Prisma', async () => {
             const userUUID = randomUUID();
             const typeUUID = randomUUID();
             const objectUUId = randomUUID()
-            const result = [
+            const mockLikes = [
                 {
                     id: randomUUID(),
                     type_id: typeUUID,
@@ -48,10 +45,15 @@ describe('UserController', () => {
                 },
             ];
 
-            jest.spyOn(userService, 'getUserLikesOnType').mockResolvedValue(result);
+            prismaMock.like.findMany.mockResolvedValue(mockLikes);
 
-            expect(await userController.handleGetUserLikes({ userUUID, typeUUID })).toBe(result);
-            expect(userService.getUserLikesOnType).toHaveBeenCalledWith({ userUUID, typeUUID });
+            const result = await userService.getUserLikesOnType({ userUUID, typeUUID });
+
+            expect(result).toBe(mockLikes); // Validate the response
+            expect(prismaMock.like.findMany).toHaveBeenCalledWith({
+                where: { user_id: userUUID, type_id: typeUUID },
+                include: { Type: true },
+            });
         });
     });
 });

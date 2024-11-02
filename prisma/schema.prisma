@@ -12,16 +12,16 @@ datasource db {
 }
 
 model Type {
-  id   String @id @default(uuid())
+  id   String @id @default(uuid()) @db.Uuid
   name String @unique
   Like Like[]
 }
 
 model Like {
-  id        String   @id @default(uuid())
-  type_id   String
-  object_id String
-  user_id   Int
+  id        String   @id @default(uuid()) @db.Uuid
+  type_id   String @db.Uuid
+  object_id String @db.Uuid
+  user_id   String @db.Uuid
   time      DateTime @default(now())
   active    Boolean  @default(true)
 
