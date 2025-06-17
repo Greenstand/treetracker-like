@@ -55,6 +55,29 @@ paths:
         '422':
           $ref: '#/components/responses/MissingParameterError'
       deprecated: false
+  '/types/{type_uuid}/things/{object_uuid}':
+    get:
+      summary: Get likes for a specific object
+      parameters:
+        - name: type_uuid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: object_uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Like data found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeResponse'
+        '404':
+          description: Not found
   '/types/{type_uuid}/things/{object_uuid}/like':
     post:
       tags:
